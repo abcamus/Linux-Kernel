@@ -923,9 +923,12 @@ static int samsung_gpiolib_register(struct platform_device *pdev,
 	int ret;
 	int i;
 
+	pr_info("nr_banks = %d.\n", drvdata->nr_banks);
+	pr_info("drvdata: pin_base = 0x%x.\n", drvdata->pin_base);
 	for (i = 0; i < drvdata->nr_banks; ++i, ++bank) {
 		bank->gpio_chip = samsung_gpiolib_chip;
 
+		pr_info("bank: pin_base = 0x%x nr_pins = %d.\n", bank->pin_base, bank->nr_pins);
 		gc = &bank->gpio_chip;
 		gc->base = drvdata->pin_base + bank->pin_base;
 		gc->ngpio = bank->nr_pins;
@@ -933,6 +936,7 @@ static int samsung_gpiolib_register(struct platform_device *pdev,
 		gc->of_node = bank->of_node;
 		gc->label = bank->name;
 
+		pr_info("gpio chip: base = 0x%x\tngpio = 0x%x\tlabel = %s\n", gc->base, gc->ngpio, gc->label);
 		ret = gpiochip_add(gc);
 		if (ret) {
 			dev_err(&pdev->dev, "failed to register gpio_chip %s, error code: %d\n",
@@ -1038,6 +1042,7 @@ static int samsung_pinctrl_probe(struct platform_device *pdev)
 	struct resource *res;
 	int ret;
 
+	pr_info("Found samsung pinctrl.\n");
 	if (!dev->of_node) {
 		dev_err(dev, "device tree node not found\n");
 		return -ENODEV;
@@ -1059,6 +1064,7 @@ static int samsung_pinctrl_probe(struct platform_device *pdev)
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	drvdata->virt_base = devm_ioremap_resource(&pdev->dev, res);
+	pr_info("pinctrl mapping [0x%x] -> [0x%x].\n", res->start, res->end);
 	if (IS_ERR(drvdata->virt_base))
 		return PTR_ERR(drvdata->virt_base);
 

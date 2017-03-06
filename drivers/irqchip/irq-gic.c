@@ -373,6 +373,7 @@ static void gic_cpu_if_up(void)
 	bypass = readl(cpu_base + GIC_CPU_CTRL);
 	bypass &= GICC_DIS_BYPASS_MASK;
 
+	pr_info("ICCICRn = 0x%x.\n", bypass | GICC_ENABLE);
 	writel_relaxed(bypass | GICC_ENABLE, cpu_base + GIC_CPU_CTRL);
 }
 
@@ -398,6 +399,7 @@ static void __init gic_dist_init(struct gic_chip_data *gic)
 	gic_dist_config(base, gic_irqs, NULL);
 
 	writel_relaxed(GICD_ENABLE, base + GIC_DIST_CTRL);
+	pr_info("Write ICDDCR.\n");
 }
 
 static void gic_cpu_init(struct gic_chip_data *gic)
@@ -424,6 +426,7 @@ static void gic_cpu_init(struct gic_chip_data *gic)
 
 	gic_cpu_config(dist_base, NULL);
 
+	pr_info("Interrupt Threshold = %d\n", GICC_INT_PRI_THRESHOLD);
 	writel_relaxed(GICC_INT_PRI_THRESHOLD, base + GIC_CPU_PRIMASK);
 	gic_cpu_if_up();
 }
@@ -951,6 +954,7 @@ void __init gic_init_bases(unsigned int gic_nr, int irq_start,
 	gic_irqs = (gic_irqs + 1) * 32;
 	if (gic_irqs > 1020)
 		gic_irqs = 1020;
+	pr_info("gic irq numbers = %d\n", gic_irqs);
 	gic->gic_irqs = gic_irqs;
 
 	if (node) {		/* DT case */

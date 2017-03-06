@@ -411,8 +411,9 @@ static int sdhci_s3c_parse_dt(struct device *dev,
 		return 0;
 	}
 
-	if (of_get_named_gpio(node, "cd-gpios", 0))
+	if (of_get_named_gpio(node, "cd-gpios", 0)) {
 		return 0;
+	}
 
 	/* assuming internal card detect that will be configured by pinctrl */
 	pdata->cd_type = S3C_SDHCI_CD_INTERNAL;
@@ -462,6 +463,7 @@ static int sdhci_s3c_probe(struct platform_device *pdev)
 		dev_err(dev, "no irq specified\n");
 		return irq;
 	}
+	printk(KERN_INFO "sd irq = %d.\n", irq);
 
 	host = sdhci_alloc_host(dev, sizeof(struct sdhci_s3c));
 	if (IS_ERR(host)) {
@@ -478,6 +480,7 @@ static int sdhci_s3c_probe(struct platform_device *pdev)
 
 	if (pdev->dev.of_node) {
 		ret = sdhci_s3c_parse_dt(&pdev->dev, host, pdata);
+		printk(KERN_INFO "CD Type = %d\n", pdata->cd_type);
 		if (ret)
 			goto err_pdata_io_clk;
 	} else {
@@ -625,6 +628,13 @@ static int sdhci_s3c_probe(struct platform_device *pdev)
 		goto err_req_regs;
 	}
 
+	/* 
+	if (host->mmc->ops->enable_sdio_irq) {
+		host->mmc->ops->enable_sdio_irq(host->mmc, 1);
+		printk(KERN_INFO "Enable SD IRQ.\n");
+	}
+	*/
+		
 #ifdef CONFIG_PM
 	if (pdata->cd_type != S3C_SDHCI_CD_INTERNAL)
 		clk_disable_unprepare(sc->clk_io);

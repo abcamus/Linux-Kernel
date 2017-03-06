@@ -13,6 +13,8 @@
 
 /dts-v1/;
 #include "exynos4412.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/interrupt-controller/irq.h>
 
 / {
 	model = "Landrover Switch board based on Exynos4412";
@@ -46,26 +48,26 @@
 		led1 {
 			label = "led1";
 			gpios = <&gpm4 0 1>;
-			default-state = "off";
+			default-state = "on";
 			linux,default-trigger = "heartbeat";
 		};
 
 		led2 {
 			label = "led2";
 			gpios = <&gpm4 1 1>;
-			default-state = "off";
+			default-state = "on";
 		};
 
 		led3 {
 			label = "led3";
 			gpios = <&gpm4 2 1>;
-			default-state = "off";
+			default-state = "on";
 		};
 
 		led4 {
 			label = "led4";
 			gpios = <&gpm4 3 1>;
-			default-state = "off";
+			default-state = "on";
 			linux,default-trigger = "mmc0";
 		};
 	};
@@ -92,8 +94,8 @@
 
 	sdhci@12530000 {
 		bus-width = <4>;
-		pinctrl-0 = <&sd2_clk &sd2_cmd &sd2_bus4>;
-		cd-gpios = <&gpk2 2 0>;
+		pinctrl-0 = <&sd2_clk &sd2_cmd &sd2_cd &sd2_bus4>;
+		cd-gpios = <&gpk2 2 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		vmmc-supply = <&mmc_reg>;
 		status = "okay";
@@ -126,4 +128,32 @@
 			clock-frequency = <24000000>;
 		};
 	};
+	
+	exynos-usbphy@125B0000 {
+		status = "okay";	
+	};
+	
+	ehci: ehci@12580000 {
+		//samsung,vbus-gpio = <&gpx3 5 1>;
+		status = "okay";	
+		port@0 {
+			status = "okay";
+		};
+		port@1 {
+			status = "okay";
+		};
+		port@2 {
+			status = "okay";	
+		};
+	};
+
+	usb3503 {
+		compatible = "smsc,usb3503";	
+		reg = <0x08 0x4>;
+		connect-gpios = <&gpm3 3 GPIO_ACTIVE_LOW>;
+		intn-gpios = <&gpx2 3 GPIO_ACTIVE_LOW>;
+		reset-gpios = <&gpm2 4 GPIO_ACTIVE_LOW>;
+		initial-mode = <1>;
+	};
+	
 };

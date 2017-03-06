@@ -311,6 +311,7 @@ static int exynos_eint_gpio_init(struct samsung_pinctrl_drv_data *d)
 		return -EINVAL;
 	}
 
+	pr_info("request GPIO irq: %d.\n", d->irq);
 	ret = devm_request_irq(dev, d->irq, exynos_eint_gpio_irq,
 					0, dev_name(dev), d);
 	if (ret) {

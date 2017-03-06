@@ -1419,7 +1419,9 @@ static void __init exynos4_clk_init(struct device_node *np,
 		samsung_clk_register_pll(ctx, exynos4210_plls,
 					ARRAY_SIZE(exynos4210_plls), reg_base);
 	} else {
+		printk(KERN_INFO "Config Clock for Exynos4X12.\n");
 		if (_get_rate("fin_pll") == 24000000) {
+			printk(KERN_INFO "Init rate_table since fin_pll is 24MHz.\n");
 			exynos4x12_plls[apll].rate_table =
 							exynos4x12_apll_rates;
 			exynos4x12_plls[epll].rate_table =
@@ -1497,6 +1499,7 @@ CLK_OF_DECLARE(exynos4210_clk, "samsung,exynos4210-clock", exynos4210_clk_init);
 
 static void __init exynos4412_clk_init(struct device_node *np)
 {
+	printk(KERN_INFO "%s:%d.\n", __func__, __LINE__);
 	exynos4_clk_init(np, EXYNOS4X12);
 }
 CLK_OF_DECLARE(exynos4412_clk, "samsung,exynos4412-clock", exynos4412_clk_init);

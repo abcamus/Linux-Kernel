@@ -14,7 +14,7 @@
 
 #define PIN_PULL_NONE		0
 #define PIN_PULL_DOWN		1
-#define PIN_PULL_UP		3
+#define PIN_PULL_UP			3
 
 #define PIN_PDN_OUT0		0
 #define PIN_PDN_OUT1		1

@@ -109,7 +109,9 @@ void gic_cpu_config(void __iomem *base, void (*sync_access)(void))
 	 * Deal with the banked PPI and SGI interrupts - disable all
 	 * PPI interrupts, ensure all SGI interrupts are enabled.
 	 */
+	pr_info("Write 0x%x to ICDICER\n", GICD_INT_EN_CLR_PPI);
 	writel_relaxed(GICD_INT_EN_CLR_PPI, base + GIC_DIST_ENABLE_CLEAR);
+	pr_info("Write 0x%x to ICDISER\n", GICD_INT_EN_SET_SGI);
 	writel_relaxed(GICD_INT_EN_SET_SGI, base + GIC_DIST_ENABLE_SET);
 
 	/*

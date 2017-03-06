@@ -72,6 +72,7 @@ static int exynos_ehci_get_phy(struct device *dev,
 			return -EINVAL;
 		}
 
+		pr_info("usb phy_number = %d.\n", phy_number);
 		phy = devm_of_phy_get(dev, child, NULL);
 		exynos_ehci->phy[phy_number] = phy;
 		if (IS_ERR(phy)) {
@@ -154,7 +155,20 @@ static int exynos_ehci_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	exynos_setup_vbus_gpio(&pdev->dev);
+	//exynos_setup_vbus_gpio(&pdev->dev);
+
+	void __iomem *etc6_addr = ioremap(0x11000228, 2);
+	unsigned int etc6pud, etc6drv;
+	if (!etc6_addr)
+		pr_info("Can't Map ETC6.\n");
+	else {
+		etc6pud = readl(etc6_addr);
+		etc6drv = readl(etc6_addr+4);
+		pr_info("ETC6PUD = 0x%x\tETC6DRV = 0x%x.\n", etc6pud, etc6drv);
+		writel(etc6pud | (0x3<<12), etc6_addr);
+		writel(etc6drv | (0x1<<12), etc6_addr+4);
+		pr_info("Configed ETC6PUD = 0x%x, ETC6DRV = 0x%x.\n", readl(etc6_addr), readl(etc6_addr+4));
+	}
 
 	hcd = usb_create_hcd(&exynos_ehci_hc_driver,
 			     &pdev->dev, dev_name(&pdev->dev));
@@ -169,8 +183,10 @@ static int exynos_ehci_probe(struct platform_device *pdev)
 		goto skip_phy;
 
 	err = exynos_ehci_get_phy(&pdev->dev, exynos_ehci);
-	if (err)
+	if (err) {
+		pr_info("get phy error.\n");
 		goto fail_clk;
+	}
 
 skip_phy:
 

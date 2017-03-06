@@ -61,6 +61,11 @@ static struct map_desc exynos4_iodesc[] __initdata = {
 		.pfn		= __phys_to_pfn(EXYNOS4_PA_DMC1),
 		.length		= SZ_64K,
 		.type		= MT_DEVICE,
+	}, {
+		.virtual	= (unsigned long)S5P_VA_HSPHY,
+		.pfn		= __phys_to_pfn(EXYNOS4_PA_HSPHY),
+		.length		= SZ_4K,
+		.type		= MT_DEVICE,
 	},
 };
 
@@ -221,6 +226,7 @@ static void __init exynos_init_irq(void)
 	 * DT is not unflatten so we can't use DT APIs before
 	 * init_irq
 	 */
+	printk("%s:%d.\n", __func__, __LINE__);
 	exynos_map_pmu();
 }
 
